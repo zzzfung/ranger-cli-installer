@@ -12,6 +12,7 @@ configSecurityConfigurationProps() {
     rangerAdminSecretArn="$(aws secretsmanager get-secret-value --secret-id "ranger-admin@$RANGER_HOST" --query ARN --output text)"
     rangerPluginSecretArn="$(aws secretsmanager get-secret-value --secret-id "ranger-plugin@$RANGER_HOST" --query ARN --output text)"
     auditEventsLogGroupArn="$(aws logs describe-log-groups --log-group-name-prefix /aws-emr/audit-events --query 'logGroups[0].arn' --output text)"
+    sed -i "s|@PEM_FILE@|s3://${S3_BUCKET}/emr_bootstrap_file/certs/my-certs.zip|g" $confFile
     sed -i "s|@TRUSTING_REALM@|$TRUSTING_REALM|g" $confFile
     sed -i "s|@TRUSTING_DOMAIN@|$TRUSTING_DOMAIN|g" $confFile
     sed -i "s|@TRUSTING_HOST@|$TRUSTING_HOST|g" $confFile

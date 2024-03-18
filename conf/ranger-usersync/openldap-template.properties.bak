@@ -162,7 +162,7 @@ USERSYNC_PID_DIR_PATH=/var/run/ranger
 # valid values: true, false
 # any value other than true would be treated as false
 # default value: false
-SYNC_GROUP_SEARCH_ENABLED=true
+SYNC_GROUP_SEARCH_ENABLED=
 
 # do we want to do ldapsearch to find groups instead of relying on user entry attributes and
 # sync memberships of those groups
@@ -176,7 +176,7 @@ SYNC_GROUP_USER_MAP_SYNC_ENABLED=
 # overrides value specified in SYNC_LDAP_SEARCH_BASE,  SYNC_LDAP_USER_SEARCH_BASE
 # if a value is not specified, takes the value of  SYNC_LDAP_SEARCH_BASE
 # if  SYNC_LDAP_SEARCH_BASE is also not specified, takes the value of SYNC_LDAP_USER_SEARCH_BASE
-SYNC_GROUP_SEARCH_BASE=ou=groups,dc=example,dc=com
+SYNC_GROUP_SEARCH_BASE=
 
 # search scope for the groups, only base, one and sub are supported values
 # please customize the value to suit your deployment
@@ -186,7 +186,7 @@ SYNC_GROUP_SEARCH_SCOPE=
 # objectclass to identify group entries
 # please customize the value to suit your deployment
 # default value: groupofnames
-SYNC_GROUP_OBJECT_CLASS=posixGroup
+SYNC_GROUP_OBJECT_CLASS=person
 
 # optional additional filter constraining the groups selected for syncing
 # a sample value would be (dept=eng)
@@ -197,12 +197,12 @@ SYNC_LDAP_GROUP_SEARCH_FILTER=
 # attribute from group entry that would be treated as group name
 # please customize the value to suit your deployment
 # default value: cn
-SYNC_GROUP_NAME_ATTRIBUTE=cn
+SYNC_GROUP_NAME_ATTRIBUTE=
 
 # attribute from group entry that is list of members
 # please customize the value to suit your deployment
 # default value: member
-SYNC_GROUP_MEMBER_ATTRIBUTE_NAME=memberUid
+SYNC_GROUP_MEMBER_ATTRIBUTE_NAME=
 
 # do we want to use paged results control during ldapsearch for user entries
 # valid values: true, false

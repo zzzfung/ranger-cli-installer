@@ -1,4 +1,14 @@
 {
+  "EncryptionConfiguration": {
+		"EnableInTransitEncryption": true,
+		"EnableAtRestEncryption": false,
+		"InTransitEncryptionConfiguration": {
+			"TLSCertificateConfiguration": {
+				"CertificateProviderType": "PEM",
+				"S3Object": "@PEM_FILE@"
+			}
+		}
+  },
   "AuthenticationConfiguration": {
     "KerberosConfiguration": {
       "Provider": "ClusterDedicatedKdc",
@@ -34,6 +44,11 @@
           "App":"EMRFS-S3",
           "ClientSecretARN":"@RANGER_PLUGIN_SECRET_ARN@",
           "PolicyRepositoryName":"emrfs"
+        },        
+        {
+          "App":"Trino",
+          "ClientSecretARN":"@RANGER_PLUGIN_SECRET_ARN@",
+          "PolicyRepositoryName":"trino"
         }
       ],
       "AuditConfiguration":{

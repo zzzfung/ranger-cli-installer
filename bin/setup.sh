@@ -283,7 +283,7 @@ parseArgs() {
         sssd-bind-dn:,sssd-bind-password:,\
         skip-install-openldap:,openldap-user-dn-pattern:,openldap-group-search-filter:,openldap-base-dn:,ranger-bind-dn:,ranger-bind-password:,hue-bind-dn:,hue-bind-password:,openldap-user-object-class:,\
         skip-install-mysql:,mysql-host:,mysql-root-password:,mysql-ranger-db-user-password:,skip-install-solr:,solr-host:,\
-        emr-cluster-id:,skip-configure-hue:\
+        emr-cluster-id:,skip-configure-hue:,s3-bucket:\
     "
     # IMPORTANT!! -o option can not be omitted, even there are no any short options!
     # otherwise, parsing will go wrong!
@@ -304,6 +304,7 @@ parseArgs() {
                 # 2. compute.internal for other regions
                 if [ "$REGION" = "us-east-1" ]; then
                     CERTIFICATE_CN="*.ec2.internal"
+                    CERTIFICATE_CN_REGION="*.${REGION}.ec2.internal"
                 else
                     # BE CAREFUL:
                     # SSL: certificate subject name '*.compute.internal' does not match target host name 'ip-x-x-x-x.cn-north-1.compute.internal'
@@ -311,6 +312,7 @@ parseArgs() {
                     # BUT for opensource plugins, "*.compute.internal"??? testing!!!
                     # CERTIFICATE_CN="*.${REGION}.compute.internal"
                     CERTIFICATE_CN="*.compute.internal"
+                    CERTIFICATE_CN_REGION="*.${REGION}.compute.internal"
                 fi
                 # 1. for china, arn root is aws-cn
                 # 2. for others, arn root is aws
@@ -579,6 +581,10 @@ parseArgs() {
                 RESTART_INTERVAL="$2"
                 shift 2
                 ;;
+            --s3-bucket)
+                S3_BUCKET="$2"
+                shift 2
+                ;;
             --) # No more arguments
                 shift
                 break
@@ -691,6 +697,7 @@ resetAllOpts() {
     OPENLDAP_ROOT_CN='admin'
     OPENLDAP_ROOT_PASSWORD=$COMMON_DEFAULT_PASSWORD
     EXAMPLE_GROUP="example-group"
+    CERTS_PATH="/tmp/certs"
 }
 
 printAllOpts() {

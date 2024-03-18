@@ -60,8 +60,59 @@ addExampleUsersOnOpenldapLocal() {
     fi
 }
 
+# addOpenldapUsers() {
+#     for user in "${EXAMPLE_USERS[@]}"; do
+#         # add user
+#         cat << EOF | ldapadd -D "$OPENLDAP_ROOT_DN" -w $OPENLDAP_ROOT_PASSWORD
+# dn: uid=$user,$OPENLDAP_USERS_BASE_DN
+# objectClass: posixAccount
+# objectClass: top
+# objectClass: inetOrgPerson
+# uid: $user
+# displayName: $user
+# sn: $user
+# homeDirectory: /home/$user
+# cn: $user
+# uidNumber: $((1000+$RANDOM%9000))
+# gidNumber: 100
+# userPassword: $(slappasswd -s $COMMON_DEFAULT_PASSWORD)
+# EOF
+#         # add user to group
+#         ldapsearch -D "$OPENLDAP_ROOT_DN" -w $OPENLDAP_ROOT_PASSWORD -b "cn=$EXAMPLE_GROUP,ou=groups,$OPENLDAP_BASE_DN" >& /dev/null
+#         # if group not exists, use ldapadd, otherwise ldapmodify
+#         # the root cause of this augly design is ldap coupled group's creating with users!
+#         if [ "$?" != "0" ]; then
+#             cat << EOF | ldapadd -D "$OPENLDAP_ROOT_DN" -w $OPENLDAP_ROOT_PASSWORD
+# dn: cn=$EXAMPLE_GROUP,ou=groups,$OPENLDAP_BASE_DN
+# cn: $EXAMPLE_GROUP
+# objectclass: top
+# objectclass: groupofnames
+# member: uid=$user,$OPENLDAP_USERS_BASE_DN
+# EOF
+#         else
+#             cat << EOF | ldapmodify -D "$OPENLDAP_ROOT_DN" -w $OPENLDAP_ROOT_PASSWORD
+# dn: cn=$EXAMPLE_GROUP,ou=groups,$OPENLDAP_BASE_DN
+# changetype: modify
+# add: member
+# member: uid=$user,$OPENLDAP_USERS_BASE_DN
+# EOF
+#         fi
+#     done
+# }
+
 addOpenldapUsers() {
     for user in "${EXAMPLE_USERS[@]}"; do
+        USER_UID=$((2000+$RANDOM%999))
+        ldapsearch -D "$OPENLDAP_ROOT_DN" -w $OPENLDAP_ROOT_PASSWORD -b "cn=$EXAMPLE_GROUP,ou=groups,$OPENLDAP_BASE_DN" >& /dev/null
+        if [ "$?" != "0" ]; then
+            GROUP_GID=$((3000+$RANDOM%999))
+            echo "用户组不存在 --${GROUP_GID}"
+        else
+            GROUP_GID=`ldapsearch -D "$OPENLDAP_ROOT_DN" -w $OPENLDAP_ROOT_PASSWORD -b "ou=groups,$OPENLDAP_BASE_DN" -s sub "(&(objectClass=posixGroup)(cn=$EXAMPLE_GROUP))" gidNumber | grep "^gidNumber:" | awk '{print $2}'`
+            echo "用户组存在 --${GROUP_GID}"
+        fi
+
+
         # add user
         cat << EOF | ldapadd -D "$OPENLDAP_ROOT_DN" -w $OPENLDAP_ROOT_PASSWORD
 dn: uid=$user,$OPENLDAP_USERS_BASE_DN
@@ -73,28 +124,30 @@ displayName: $user
 sn: $user
 homeDirectory: /home/$user
 cn: $user
-uidNumber: $((1000+$RANDOM%9000))
-gidNumber: 100
+uidNumber: $USER_UID
+gidNumber: $GROUP_GID
 userPassword: $(slappasswd -s $COMMON_DEFAULT_PASSWORD)
 EOF
-        # add user to group
+
+        #检查是否有groups，如果不存在就创建，如果存在就直接把刚刚的用户添加到groups中
         ldapsearch -D "$OPENLDAP_ROOT_DN" -w $OPENLDAP_ROOT_PASSWORD -b "cn=$EXAMPLE_GROUP,ou=groups,$OPENLDAP_BASE_DN" >& /dev/null
-        # if group not exists, use ldapadd, otherwise ldapmodify
-        # the root cause of this augly design is ldap coupled group's creating with users!
         if [ "$?" != "0" ]; then
+            echo '不存在，需要创建'
             cat << EOF | ldapadd -D "$OPENLDAP_ROOT_DN" -w $OPENLDAP_ROOT_PASSWORD
 dn: cn=$EXAMPLE_GROUP,ou=groups,$OPENLDAP_BASE_DN
 cn: $EXAMPLE_GROUP
 objectclass: top
-objectclass: groupofnames
-member: uid=$user,$OPENLDAP_USERS_BASE_DN
+objectclass: posixGroup
+gidNumber: $GROUP_GID
+memberUid: $user
 EOF
         else
+            echo '已经存在添加用户'
             cat << EOF | ldapmodify -D "$OPENLDAP_ROOT_DN" -w $OPENLDAP_ROOT_PASSWORD
 dn: cn=$EXAMPLE_GROUP,ou=groups,$OPENLDAP_BASE_DN
 changetype: modify
-add: member
-member: uid=$user,$OPENLDAP_USERS_BASE_DN
+add: memberUid
+memberUid: $user
 EOF
         fi
     done

@@ -18,6 +18,7 @@ initEc2() {
         configSsh
         installAwsCli
         installJdk8IfNotExists
+        generateCertificateForTrino
         touch "$INIT_EC2_FLAG_FILE"
 #    fi
 }
@@ -127,4 +128,16 @@ installJdk8IfNotExists() {
         # not work for current ssh session!
         sudo -i -u ec2-user source /etc/profile.d/java.sh
     fi
+}
+
+
+generateCertificateForTrino(){
+	sudo mkdir "$CERTS_PATH"
+	sudo chown ec2-user:ec2-user /tmp/certs
+	cd "$CERTS_PATH"
+	openssl req -x509 -newkey rsa:1024 -keyout privateKey.pem -out certificateChain.pem -days 365 -nodes -subj "/C=US/ST=Washington/L=Seattle/O=MyOrg/OU=MyDept/CN=${CERTIFICATE_CN_REGION}"
+	cp certificateChain.pem trustedCertificates.pem
+	zip -r -X my-certs.zip certificateChain.pem privateKey.pem trustedCertificates.pem
+	
+	aws s3 cp my-certs.zip "s3://${S3_BUCKET}/emr_bootstrap_file/certs/"
 }
