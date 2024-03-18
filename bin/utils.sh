@@ -70,14 +70,3 @@ askForConfirmation() {
     done
     echo $confirmed
 }
-
-generateCertificateForTrino(){
-	sudo mkdir "$CERTS_PATH"
-	sudo chown ec2-user:ec2-user /tmp/certs
-	cd "$CERTS_PATH"
-	openssl req -x509 -newkey rsa:1024 -keyout privateKey.pem -out certificateChain.pem -days 365 -nodes -subj "/C=US/ST=Washington/L=Seattle/O=MyOrg/OU=MyDept/CN=${CERTIFICATE_CN_REGION}"
-	cp certificateChain.pem trustedCertificates.pem
-	zip -r -X my-certs.zip certificateChain.pem privateKey.pem trustedCertificates.pem
-	
-	aws s3 cp my-certs.zip "s3://${S3_BUCKET}/emr_bootstrap_file/certs/"
-}
