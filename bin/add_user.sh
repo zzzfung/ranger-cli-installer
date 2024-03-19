@@ -72,7 +72,7 @@ addKerberosUsers() {
 
    for user in "${EXAMPLE_USERS[@]}"; do
 		/usr/bin/expect <<EOF
-			spawn kadmin -w "$OPENLDAP_ROOT_PASSWORD" -p kadmin/admin "addprinc -x dn=uid=$user,$OPENLDAP_USERS_BASE_DN $user"
+			spawn kadmin -w "$OPENLDAP_ROOT_PASSWORD" -p kadmin/admin -q "addprinc -x dn=uid=$user,$OPENLDAP_USERS_BASE_DN $user"
 			expect {
 				"Enter password*" {
 					send "$COMMON_DEFAULT_PASSWORD\r"
