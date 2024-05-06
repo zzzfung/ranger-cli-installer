@@ -172,7 +172,7 @@ initRangerAdminDb() {
     cp $APP_HOME/sql/init-ranger-db.sql $APP_HOME/sql/.init-ranger-db.sql
     sed -i "s|@DB_HOST@|$MYSQL_HOST|g" $APP_HOME/sql/.init-ranger-db.sql
     sed -i "s|@MYSQL_RANGER_DB_USER_PASSWORD@|$MYSQL_RANGER_DB_USER_PASSWORD|g" $APP_HOME/sql/.init-ranger-db.sql
-    mysql -h$MYSQL_HOST -uroot -p$MYSQL_ROOT_PASSWORD -s --prompt=nowarning --connect-expired-password <$APP_HOME/sql/.init-ranger-db.sql
+    mysql -h$MYSQL_HOST -uroot -p$MYSQL_ROOT_PASSWORD <$APP_HOME/sql/.init-ranger-db.sql
 }
 
 configRangerAdminOpenldapProps() {
