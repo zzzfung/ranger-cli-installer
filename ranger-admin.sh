@@ -352,9 +352,9 @@ testALL() {
 
 resetAllOpts() {
     # 删除所有环境变量配置
-    for key in "${OPT_KEYS[@]}"; do
-        eval unset $key
-    done
+    # for key in "${OPT_KEYS[@]}"; do
+    #     eval unset $key
+    # done
     # 如果命令行中没有设置，则为某些配置设置默认值。
     # INIT_EC2_FLAG_FILE='/tmp/init-ec2.flag'
     # MIGRATE_KERBEROS_DB_FLAG='/tmp/migrate-kerberos-db.flag'
