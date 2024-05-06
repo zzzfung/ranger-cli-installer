@@ -810,8 +810,8 @@ case $ACTION in
     test)
         test
     ;;
-    init-ec2)
-        initEc2
+    init)
+        init
     ;;
     force-init-ec2)
         forceInitEc2
