@@ -18,6 +18,20 @@ OPT_KEYS=(
     EXAMPLE_GROUP EXAMPLE_USERS SKIP_CONFIGURE_HUE RESTART_INTERVAL CERTS_PATH S3_BUCKET
 )
 
+# 输出
+printHeading()
+{
+    title="$1"
+    if [ "$TERM" = "dumb" -o "$TERM" = "unknown" ]; then
+        paddingWidth=60
+    else
+        paddingWidth=$((($(tput cols)-${#title})/2-5))
+    fi
+    printf "\n%${paddingWidth}s"|tr ' ' '='
+    printf "    $title    "
+    printf "%${paddingWidth}s\n\n"|tr ' ' '='
+}
+
 # 初始化服务器
 init() {
     installTools
