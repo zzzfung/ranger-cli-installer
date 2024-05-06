@@ -48,8 +48,6 @@ installTools() {
     # change timezone
     # cp /usr/share/zoneinfo/Asia/Shanghai /etc/localtime
     yum install mysql -y
-    systemctl enable mysqld
-    systemctl start mysqld
 }
 
 # ssh 配置
