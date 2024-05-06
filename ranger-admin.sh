@@ -134,6 +134,8 @@ installSolrIfNotExists() {
 # 初始化solr
 initSolrAsRangerAuditStore() {
     printHeading "INIT SOLR AS RANGER AUDIT STORE"
+    # 获取Java路径 (使用通配符匹配)
+    JAVA_HOME=$(find /usr/lib/jvm -name "java-1.8.0-openjdk*" -type d | head -n 1)
     tar -zxvf /tmp/ranger-repo/ranger-$RANGER_VERSION-solr_for_audit_setup.tar.gz -C /tmp &>/dev/null
     confFile=/tmp/solr_for_audit_setup/install.properties
     # backup confFile
@@ -337,7 +339,8 @@ installRangerUsersync() {
 # 安装Ranger
 installRanger() {
     printHeading "INSTALL RANGER"
-    testLdapConnectivity
+    # testLdapConnectivity
+    init
     downloadRangerRepo
     # if [ "$SKIP_INSTALL_MYSQL" = "false" ]; then
     #     installMySqlIfNotExists
